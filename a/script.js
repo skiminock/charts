@@ -72,9 +72,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
     d3.select('svg')
         .call(d3.zoom()
-            .scaleExtent([1, 8])
-            .translateExtent(extent)
             .extent(extent)
+            .scaleExtent([1, 1])
+            //.translateExtent(extent)
             .on("zoom", () => { zoomed() })
         )
 
