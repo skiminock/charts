@@ -1,26 +1,9 @@
 const height = 500
 const width = 954
-const margin = ({top: 20, right: 0, bottom: 30, left: 40})
-
-function zoom(svg) {
-    const extent = [[margin.left, margin.top], [width - margin.right, height - margin.top]];
-
-    svg.call(d3.zoom()
-        .scaleExtent([1, 8])
-        .translateExtent(extent)
-        .extent(extent)
-        .on("zoom", () => { zoomed() }));
-
-    function zoomed() {
-        debugger
-        x.range([margin.left, width - margin.right].map(d => d3.event.transform.applyX(d)));
-        svg.selectAll(".bars rect").attr("x", d => x(d.name)).attr("width", x.bandwidth());
-        svg.selectAll(".x-axis").call(xAxis);
-    }
-}
+const margin = { top: 20, right: 0, bottom: 30, left: 40 }
+const extent = [[margin.left, margin.top], [width - margin.right, height - margin.top]];
 
 document.addEventListener("DOMContentLoaded", function () {
-    const url = 'https://static.observableusercontent.com/files/09f63bb9ff086fef80717e2ea8c974f918a996d2bfa3d8773d3ae12753942c002d0dfab833d7bee1e0c9cd358cd3578c1cd0f9435595e76901508adc3964bbdc'
 
     const data = [
         { name: '1', value: 1 },
@@ -66,7 +49,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     d3.create("svg")
         .attr("viewBox", [0, 0, width, height])
-        .call(zoom);
 
     d3.select('svg')
         .append("g")
@@ -87,4 +69,19 @@ document.addEventListener("DOMContentLoaded", function () {
     d3.select('svg').append("g")
         .attr("class", "y-axis")
         .call(yAxis);
+
+    d3.select('svg')
+        .call(d3.zoom()
+            .scaleExtent([1, 8])
+            .translateExtent(extent)
+            .extent(extent)
+            .on("zoom", () => { zoomed() })
+        )
+
+    function zoomed() {
+        x.range([margin.left, width - margin.right].map(d => d3.event.transform.applyX(d)));
+        d3.select('svg').selectAll(".bars rect").attr("x", d => x(d.name)).attr("width", x.bandwidth());
+        d3.select('svg').selectAll(".x-axis").call(xAxis);
+    }
+
 })
