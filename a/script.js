@@ -1,7 +1,24 @@
 const height = 248
 const width = 544
 const margin = { top: 20, right: 40, bottom: 30, left: 40 }
-const extent = [[margin.left, margin.top], [width - margin.right, height - margin.top]];
+
+function bar(x, y, width, height, radius, f = 1) {
+    // x coordinates of top of arcs
+    const x0 = x + radius;
+    const x1 = x + width - radius;
+    // y coordinates of bottom of arcs
+    const y0 = y - height + radius;
+
+    return [
+        'M', x, y,
+        'L', x, y0,
+        'A', radius, radius, 0, 0, f, x0, y - height,
+        'L', x1, y - height,
+        'A', radius, radius, 0, 0, f, x + width, y0,
+        'L', x + width, y,
+        'Z'
+    ].join(' ');
+}
 
 document.addEventListener('DOMContentLoaded', function () {
 
@@ -20,8 +37,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const barWidth = 24
     const barSpace = 40;
-    const xScaleRange = data.length * (barWidth + barSpace);
-    const barsRange = [margin.left, xScaleRange + margin.right]
+    const barsRange = [margin.left, data.length * (barWidth + barSpace) + margin.right]
 
     const x = d3
         .scaleBand()
@@ -48,6 +64,16 @@ document.addEventListener('DOMContentLoaded', function () {
         .call(d3.axisLeft(y))
         //.call(g => g.select('.domain').remove())
 
+    function fillBar (d) {
+        return bar(
+            x(d.year)  + (barSpace / 2),
+            y(0),
+            x.bandwidth() - barSpace,
+            y(0)-y(d.value),
+            4
+        )
+    }
+
     d3.select('svg')
         .attr('width', width)
         .attr('height', height)
@@ -57,13 +83,10 @@ document.addEventListener('DOMContentLoaded', function () {
         .append('g')
         .attr('class', 'bars')
         .attr('fill', '#33CCFF')
-        .selectAll('rect')
+        .selectAll('path')
         .data(data)
-        .join('rect')
-        .attr('x', d => x(d.year)  + (barSpace / 2))
-        .attr('y', d => y(d.value))
-        .attr('width', x.bandwidth() - barSpace)
-        .attr('height', d => y(0) - y(d.value));
+        .join('path')
+        .attr('d', fillBar)
 
     d3.select('svg').append('g')
         .attr('class', 'x-axis')
@@ -77,9 +100,7 @@ document.addEventListener('DOMContentLoaded', function () {
         .call(
             d3
                 .zoom()
-                .extent(extent)
                 .scaleExtent([1, 1])
-                //.translateExtent(extent)
                 .on('zoom', zoomed)
         )
 
@@ -89,9 +110,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
         d3
             .select('svg')
-            .selectAll('.bars rect')
-            .attr('x', d => x(d.year) + (barSpace / 2))
-            .attr('width', x.bandwidth() - barSpace);
+            .selectAll('.bars path')
+            .attr('d', fillBar)
 
         d3
             .select('svg')
