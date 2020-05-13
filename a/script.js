@@ -134,7 +134,6 @@ document.addEventListener('DOMContentLoaded', function () {
             .zoom()
             .scaleExtent([1, 1])
             .translateExtent([[0, 0], [data.length * (barWidth + barSpace) + margin.right, height]])
-            .extent([[0, 0], [width, height]])
             .on('start', onZoomStart)
             .on('zoom', onZoom)
             .on('end', onZoomEnd)
