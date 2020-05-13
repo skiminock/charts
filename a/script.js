@@ -1,6 +1,6 @@
 const height = 248
 const width = 544
-const margin = { top: 20, right: 40, bottom: 30, left: 40 }
+const margin = { top: 20, right: 20, bottom: 30, left: 20 }
 
 function bar(x, y, width, height, radius, f = 1) {
     // x coordinates of top of arcs
@@ -86,15 +86,40 @@ document.addEventListener('DOMContentLoaded', function () {
         .selectAll('path')
         .data(data)
         .join('path')
+        .attr('opacity', 0)
         .attr('d', fillBar)
+        .transition(d3.easeLinear)
+        .duration(300)
+        .attr('opacity', 1)
 
     d3.select('svg').append('g')
+        .attr('opacity', 0)
         .attr('class', 'x-axis')
-        .call(xAxis);
+
+    d3.select('.x-axis')
+        .call(xAxis)
+        .transition(d3.easeLinear)
+        .duration(300)
+        .attr('opacity', 1)
 
     d3.select('svg').append('g')
+        .attr('opacity', 0)
         .attr('class', 'y-axis')
-        .call(yAxis);
+
+    d3.select('.y-axis').append('rect')
+        .attr('width', margin.left)
+        .attr('height', height)
+        .attr('x', -margin.left)
+        .attr('y', 0)
+        .attr('fill', '#ffffff')
+        .attr('stroke-width', 1)
+        .attr('stroke', '#ffffff')
+
+    d3.select('.y-axis')
+        .call(yAxis)
+        .transition(d3.easeLinear)
+        .duration(300)
+        .attr('opacity', 1)
 
     const zoom =
         d3
