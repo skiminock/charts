@@ -2,24 +2,6 @@ const height = 248
 const width = 544
 const margin = { top: 20, right: 20, bottom: 30, left: 20 }
 
-function bar(x, y, width, height, radius, f = 1) {
-    // x coordinates of top of arcs
-    const x0 = x + radius;
-    const x1 = x + width - radius;
-    // y coordinates of bottom of arcs
-    const y0 = y - height + radius;
-
-    return [
-        'M', x, y,
-        'L', x, y0,
-        'A', radius, radius, 0, 0, f, x0, y - height,
-        'L', x1, y - height,
-        'A', radius, radius, 0, 0, f, x + width, y0,
-        'L', x + width, y,
-        'Z'
-    ].join(' ');
-}
-
 document.addEventListener('DOMContentLoaded', function () {
 
     const data = [
@@ -64,22 +46,43 @@ document.addEventListener('DOMContentLoaded', function () {
         .call(d3.axisLeft(y))
         //.call(g => g.select('.domain').remove())
 
-    function fillBar (d) {
-        return bar(
+    function bar(d) {
+
+        return barInner(
             x(d.year)  + (barSpace / 2),
             y(0),
             x.bandwidth() - barSpace,
             y(0)-y(d.value),
             4
         )
+
+        function barInner(x, y, width, height, radius, f = 1) {
+            // x coordinates of top of arcs
+            const x0 = x + radius;
+            const x1 = x + width - radius;
+            // y coordinates of bottom of arcs
+            const y0 = y - height + radius;
+
+            return [
+                'M', x, y,
+                'L', x, y0,
+                'A', radius, radius, 0, 0, f, x0, y - height,
+                'L', x1, y - height,
+                'A', radius, radius, 0, 0, f, x + width, y0,
+                'L', x + width, y,
+                'Z'
+            ].join(' ');
+        }
     }
 
-    d3.select('svg')
+    d3
+        .select('svg')
         .attr('width', width)
         .attr('height', height)
         .attr('viewBox', [0, 0, width, height])
 
-    d3.select('svg')
+    d3
+        .select('svg')
         .append('g')
         .attr('class', 'bars')
         .attr('fill', '#33CCFF')
@@ -87,12 +90,14 @@ document.addEventListener('DOMContentLoaded', function () {
         .data(data)
         .join('path')
         .attr('opacity', 0)
-        .attr('d', fillBar)
+        .attr('d', bar)
         .transition(d3.easeLinear)
         .duration(300)
         .attr('opacity', 1)
 
-    d3.select('svg').append('g')
+    d3
+        .select('svg')
+        .append('g')
         .attr('opacity', 0)
         .attr('class', 'x-axis')
 
@@ -102,11 +107,13 @@ document.addEventListener('DOMContentLoaded', function () {
         .duration(300)
         .attr('opacity', 1)
 
-    d3.select('svg').append('g')
+    d3.select('svg')
+        .append('g')
         .attr('opacity', 0)
         .attr('class', 'y-axis')
 
-    d3.select('.y-axis').append('rect')
+    d3.select('.y-axis')
+        .append('rect')
         .attr('width', margin.left)
         .attr('height', height)
         .attr('x', -margin.left)
@@ -115,7 +122,8 @@ document.addEventListener('DOMContentLoaded', function () {
         .attr('stroke-width', 1)
         .attr('stroke', '#ffffff')
 
-    d3.select('.y-axis')
+    d3
+        .select('.y-axis')
         .call(yAxis)
         .transition(d3.easeLinear)
         .duration(300)
@@ -138,7 +146,7 @@ document.addEventListener('DOMContentLoaded', function () {
         d3
             .select('svg')
             .selectAll('.bars path')
-            .attr('d', fillBar)
+            .attr('d', bar)
 
         d3
             .select('svg')
