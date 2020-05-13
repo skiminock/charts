@@ -96,16 +96,18 @@ document.addEventListener('DOMContentLoaded', function () {
         .attr('class', 'y-axis')
         .call(yAxis);
 
+    const zoom =
+        d3
+            .zoom()
+            .scaleExtent([1, 1])
+            .on('start', onZoomStart)
+            .on('zoom', onZoom)
+            .on('end', onZoomEnd)
+
     d3.select('svg')
-        .call(
-            d3
-                .zoom()
-                .scaleExtent([1, 1])
-                .on('zoom', zoomed)
-        )
+        .call(zoom)
 
-    function zoomed() {
-
+    function onZoom() {
         x.range(barsRange.map(d => d3.event.transform.applyX(d)));
 
         d3
@@ -117,6 +119,14 @@ document.addEventListener('DOMContentLoaded', function () {
             .select('svg')
             .selectAll('.x-axis')
             .call(xAxis);
+    }
+    
+    function onZoomStart() {
+        console.log('on zoom start')
+    }
+    
+    function onZoomEnd() {
+        console.log('on zoom end')
     }
 
 })
