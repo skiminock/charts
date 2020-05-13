@@ -133,6 +133,8 @@ document.addEventListener('DOMContentLoaded', function () {
         d3
             .zoom()
             .scaleExtent([1, 1])
+            .translateExtent([[0, 0], [data.length * (barWidth + barSpace) + margin.right, height]])
+            .extent([[0, 0], [width, height]])
             .on('start', onZoomStart)
             .on('zoom', onZoom)
             .on('end', onZoomEnd)
@@ -141,6 +143,8 @@ document.addEventListener('DOMContentLoaded', function () {
         .call(zoom)
 
     function onZoom() {
+        console.log('d3.event.transform.x', d3.event.transform.x)
+
         x.range(barsRange.map(d => d3.event.transform.applyX(d)));
 
         d3
